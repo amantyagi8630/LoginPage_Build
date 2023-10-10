@@ -37,6 +37,12 @@ class AppRoute {
       builder: (BuildContext context, GoRouterState state) {
         return SignIn();
       },
+    ),
+    GoRoute(
+      path: "/e",
+      builder: (BuildContext context, GoRouterState state) {
+        return DashBoard();
+      },
     )
   ]);
 }

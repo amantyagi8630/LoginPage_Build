@@ -160,10 +160,7 @@ class _SignUpState extends State<SignUp> {
                                 await prefs.setString('password', password);
                                 if (passwordController.text ==
                                     confirmPasswordController.text) {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => SignIn()));
+                                  context.go('/d');
                                 } else {
                                   const message = SnackBar(
                                     content: Text('Password not matched.'),
@@ -196,16 +193,12 @@ class _SignUpState extends State<SignUp> {
                           ),
                           TextButton(
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SignIn(),
-                                  ));
+                              context.go('/d');
                             },
                             child: Padding(
                               padding: EdgeInsets.zero,
                               child: Text(
-                                'Login    ',
+                                'Login     ',
                               ),
                             ),
                             style: ButtonStyle(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:untitled/Home%20Screen.dart';
 
@@ -30,10 +31,7 @@ class DashBoard extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () async {
                         // Navigate back to sign-in page
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomeScreen()),
-                        );
+                        context.go('/a');
                       },
                       child: Text('Logout'),
                     ),
@@ -50,10 +48,7 @@ class DashBoard extends StatelessWidget {
                         prefs.remove('password');
 
                         // Navigate back to sign-in page
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomeScreen()),
-                        );
+                        context.go('/a');
                       },
                       child: Text('Clear Credentials'),
                     ),
