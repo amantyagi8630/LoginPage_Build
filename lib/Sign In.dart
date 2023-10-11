@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignIn extends StatefulWidget {
-  const SignIn({Key? key}) : super(key: key);
-
+  final List<Map<String, String>> registeredUsers;
+  const SignIn({Key? key, required this.registeredUsers}) : super(key: key);
   @override
   _SignInState createState() => _SignInState();
 }
@@ -14,6 +14,9 @@ class _SignInState extends State<SignIn> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _obscurePassword = true;
+  final List<Map<String, String>> registeredUsers;
+  _SignInState(this.registeredUsers);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,13 +135,19 @@ class _SignInState extends State<SignIn> {
                           final enteredEmail = emailController.text;
                           final enteredPassword = passwordController.text;
 
-                          SharedPreferences prefs =
-                              await SharedPreferences.getInstance();
-                          final storedEmail = prefs.getString('email');
-                          final storedPassword = prefs.getString('password');
-                          final storedUsername = prefs.getString('name');
-                          if (enteredEmail == storedEmail &&
-                              enteredPassword == storedPassword) {
+                          // Check if the entered email and password match a user in the list
+                          bool isUserValid = false;
+                          String storedUsername = '';
+
+                          for (var user in registeredUsers) {
+                            if (user['email'] == enteredEmail && user['password'] == enteredPassword) {
+                              isUserValid = true;
+                              storedUsername = user['email'];
+                              break;
+                            }
+                          }
+
+                          if (isUserValid) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Center(
@@ -154,8 +163,8 @@ class _SignInState extends State<SignIn> {
                                 backgroundColor: Colors.green.shade500,
                                 elevation: 6.0,
                                 shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                    BorderRadius.circular(10.0)),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
                                 behavior: SnackBarBehavior.floating,
                                 duration: const Duration(milliseconds: 1500),
                                 padding: const EdgeInsets.all(16.0),
@@ -164,8 +173,7 @@ class _SignInState extends State<SignIn> {
                             context.go('/e');
                           } else {
                             const message = SnackBar(
-                              content: Text(
-                                  'Please enter valid email id & password'),
+                              content: Text('Please enter valid email id & password'),
                               duration: Duration(milliseconds: 1500),
                             );
                             ScaffoldMessenger.of(context).showSnackBar(message);
