@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:untitled/Sign%20In.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({Key? key}) : super(key: key);
+  const SignUp({super.key});
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -18,6 +17,41 @@ class _SignUpState extends State<SignUp> {
   final usernameController = TextEditingController();
 
   bool passwordsMatch = true;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+
+  List<Map<String, String>> registeredUsers = [];
+  @override
+  void initState() {
+    super.initState();
+    loadRegisteredUsers();
+  }
+
+  void loadRegisteredUsers() async {
+    final prefs = await SharedPreferences.getInstance();
+    final registeredUsersData = prefs.getStringList('registered_users');
+    if (registeredUsersData != null) {
+      registeredUsers = registeredUsersData.map((userData) {
+        final userDataSplit = userData.split(':');
+        return {
+          'email': userDataSplit[0],
+          'password': userDataSplit[1],
+        };
+      }).toList();
+    }
+  }
+
+  void saveRegisteredUsers() async {
+    final prefs = await SharedPreferences.getInstance();
+    final registeredUsersData = registeredUsers
+        .map((user) => '${user['email']}:${user['password']}')
+        .toList();
+    prefs.setStringList('registered_users', registeredUsersData);
+  }
+
+  bool isEmailRegistered(String email) {
+    return registeredUsers.any((user) => user['email'] == email);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,8 +100,12 @@ class _SignUpState extends State<SignUp> {
                       TextFormField(
                         controller: usernameController,
                         decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.person,
+                              size: 25,
+                            ),
                             labelText: 'Username',
-                            hintText: 'Enter your name',
+                            hintText: 'Enter Your Name',
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(25))),
                         validator: (value) {
@@ -84,13 +122,18 @@ class _SignUpState extends State<SignUp> {
                         controller: emailController,
                         decoration: InputDecoration(
                             labelText: 'Email',
-                            hintText: 'Enter your email',
+                            prefixIcon: const Icon(
+                              Icons.email,
+                              size: 25,
+                            ),
+                            hintText: 'Enter Your Email',
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(25))),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter username';
-                          } else if (!value.endsWith('@gmail.com') && value.length > 10) {
+                          } else if (!value.endsWith('@gmail.com') ||
+                              value.length < 10) {
                             return 'Please enter a valid username';
                           }
                           return null;
@@ -100,10 +143,28 @@ class _SignUpState extends State<SignUp> {
                         height: 20,
                       ),
                       TextFormField(
+                          obscureText: _obscurePassword,
+                          obscuringCharacter: "*",
                           controller: passwordController,
                           decoration: InputDecoration(
+                              prefixIcon: const Icon(
+                                Icons.lock,
+                                size: 25,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
                               labelText: 'Password',
-                              hintText: 'Enter Your password',
+                              hintText: 'Enter Your Password',
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(25))),
                           validator: (value) {
@@ -126,11 +187,30 @@ class _SignUpState extends State<SignUp> {
                       ),
                       TextFormField(
                         controller: confirmPasswordController,
+                        obscureText: _obscureConfirmPassword,
+                        obscuringCharacter: "*",
                         decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.lock,
+                              size: 25,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureConfirmPassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureConfirmPassword =
+                                      !_obscureConfirmPassword;
+                                });
+                              },
+                            ),
                             labelText: 'Confirm Password',
-                            hintText: 'Enter Your password',
+                            hintText: 'Enter Your Password',
                             border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(25),
+                              borderRadius: BorderRadius.circular(25),
                             )),
                       ),
                       const SizedBox(
@@ -138,73 +218,146 @@ class _SignUpState extends State<SignUp> {
                       ),
                       Builder(builder: (context) {
                         return ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red.shade500,
-                              elevation: 10,
-                              minimumSize: const Size(370, 40),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(35),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 10),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red.shade500,
+                            elevation: 10,
+                            minimumSize: const Size(370, 40),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
                             ),
-                            onPressed: () async {
-                              if (_key.currentState!.validate()) {
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                          ),
+                          onPressed: () async {
+                            if (_key.currentState!.validate()) {
+                              if (passwordController.text ==
+                                  confirmPasswordController.text) {
                                 final email = emailController.text;
                                 final password = passwordController.text;
                                 final name = usernameController.text;
-
-                                SharedPreferences prefs =
-                                    await SharedPreferences.getInstance();
-                                await prefs.setString('name', name);
-                                await prefs.setString('email', email);
-                                await prefs.setString('password', password);
-                                if (passwordController.text ==
-                                    confirmPasswordController.text) {
-                                  context.go('/d');
-                                } else {
-                                  const message = SnackBar(
-                                    content: Text('Password not matched.'),
-                                    duration: Duration(milliseconds: 1500),
+                                if (isEmailRegistered(email)) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: const Center(
+                                        child: Text(
+                                          'Email already registered',
+                                          style: TextStyle(
+                                            fontFamily: "Roboto-Black",
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                      ),
+                                      backgroundColor: Colors.red,
+                                      elevation: 6.0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                      duration:
+                                          const Duration(milliseconds: 4500),
+                                      padding: const EdgeInsets.all(16.0),
+                                    ),
                                   );
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(message);
+                                } else {
+                                  registeredUsers.add(
+                                      {'email': email, 'password': password});
+                                  saveRegisteredUsers();
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  await prefs.setString('name', name);
+                                  await prefs.setString('email', email);
+                                  await prefs.setString('password', password);
+                                  context.go('/d');
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: const Center(
+                                        child: Text(
+                                          'Account Registration Successful',
+                                          style: TextStyle(
+                                            fontFamily: "Roboto-Black",
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                      ),
+                                      backgroundColor: Colors.green.shade700,
+                                      elevation: 6.0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10.0),
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                      duration: const Duration(milliseconds: 1500),
+                                      padding: const EdgeInsets.all(16.0),
+                                    ),
+                                  );
                                 }
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Center(
+                                      child: Text(
+                                        'Password not the same as confirm password',
+                                        style: TextStyle(
+                                          fontFamily: "Roboto-Black",
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ),
+                                    backgroundColor: Colors.cyan,
+                                    elevation: 6.0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    behavior: SnackBarBehavior.floating,
+                                    duration: const Duration(milliseconds: 1500),
+                                    padding: const EdgeInsets.all(16.0),
+                                  ),
+                                );
                               }
-                            },
-                            child: const Text(
-                              'Submit',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'Roboto-Black',
-                                  fontWeight: FontWeight.w800),
-                            ));
+                            }
+                          },
+                          child: const Text(
+                            'Submit',
+                            style: TextStyle(
+                                fontSize: 27,
+                                fontFamily: 'Roboto-Black',
+                                fontWeight: FontWeight.w800),
+                          ),
+                        );
                       }),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             'Already have an account?',
                             style: TextStyle(
+                                fontSize: 15,
                                 fontFamily: 'Roboto-Black',
-                                fontWeight: FontWeight.w600),
+                                fontWeight: FontWeight.w700),
                           ),
                           TextButton(
                             onPressed: () {
                               context.go('/d');
                             },
-                            child: Padding(
-                              padding: EdgeInsets.zero,
-                              child: Text(
-                                'Login     ',
-                              ),
-                            ),
                             style: ButtonStyle(
                               padding:
                                   MaterialStateProperty.all<EdgeInsetsGeometry>(
                                 EdgeInsets.zero,
+                              ),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.zero,
+                              child: Text(
+                                'Login  ',
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontFamily: 'Roboto-Black',
+                                    fontWeight: FontWeight.w700),
                               ),
                             ),
                           ),

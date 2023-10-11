@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:untitled/Sign%20In.dart';
-import 'package:untitled/Sign%20Up.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -44,7 +42,7 @@ class HomeScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                 ),
                 onPressed: () {
-                  context.go('/c');
+                  context.push('/c');
                 },
                 child: const Text(
                   'Sign Up',
@@ -68,7 +66,7 @@ class HomeScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                 ),
                 onPressed: () {
-                  context.go('/d');
+                  context.push('/d');
                 },
                 child: const Text(
                   'Sign in',

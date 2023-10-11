@@ -29,7 +29,7 @@ class AppRoute {
     GoRoute(
       path: "/c",
       builder: (BuildContext context, GoRouterState state) {
-        return const SignUp();
+        return SignUp();
       },
     ),
     GoRoute(

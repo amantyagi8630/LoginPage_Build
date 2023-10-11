@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:untitled/Home%20Screen.dart';
 
 class DashBoard extends StatelessWidget {
   const DashBoard({super.key});
@@ -9,7 +8,7 @@ class DashBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     // home: Scaffold(
+      resizeToAvoidBottomInset: false,
         body: Container(
           child: Center(
             child: Column(
@@ -59,7 +58,6 @@ class DashBoard extends StatelessWidget {
             ),
           ),
         ),
-    //  ),
     );
   }
 }

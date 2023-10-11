@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:untitled/DashBoard.dart';
-import 'package:untitled/Sign%20Up.dart';
 
 class SignIn extends StatefulWidget {
-  SignIn({Key? key}) : super(key: key);
+  const SignIn({Key? key}) : super(key: key);
 
   @override
   _SignInState createState() => _SignInState();
@@ -15,7 +13,7 @@ class _SignInState extends State<SignIn> {
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
+  bool _obscurePassword = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,8 +25,7 @@ class _SignInState extends State<SignIn> {
             icon: const Icon(Icons.arrow_back_ios_new)),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-            ),
+        decoration: const BoxDecoration(),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Form(
@@ -61,6 +58,7 @@ class _SignInState extends State<SignIn> {
                 TextFormField(
                   controller: emailController,
                   decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.email),
                       labelText: 'Email',
                       hintText: 'Enter your email',
                       border: OutlineInputBorder(
@@ -78,8 +76,24 @@ class _SignInState extends State<SignIn> {
                   height: 15,
                 ),
                 TextFormField(
+                    obscureText: _obscurePassword,
+                    obscuringCharacter: "*",
+
                     controller: passwordController,
                     decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.lock,size: 25,),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword =! _obscurePassword;
+                            });
+                          },
+                        ),
                         labelText: 'Password',
                         hintText: 'Enter Your Password',
                         border: OutlineInputBorder(
@@ -122,9 +136,31 @@ class _SignInState extends State<SignIn> {
                               await SharedPreferences.getInstance();
                           final storedEmail = prefs.getString('email');
                           final storedPassword = prefs.getString('password');
-
+                          final storedUsername = prefs.getString('name');
                           if (enteredEmail == storedEmail &&
                               enteredPassword == storedPassword) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Center(
+                                  child: Text(
+                                    'Welcome Back $storedUsername',
+                                    style: TextStyle(
+                                      fontFamily: "Roboto-Black",
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 22,
+                                    ),
+                                  ),
+                                ),
+                                backgroundColor: Colors.green.shade500,
+                                elevation: 6.0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(10.0)),
+                                behavior: SnackBarBehavior.floating,
+                                duration: const Duration(milliseconds: 1500),
+                                padding: const EdgeInsets.all(16.0),
+                              ),
+                            );
                             context.go('/e');
                           } else {
                             const message = SnackBar(
@@ -154,15 +190,15 @@ class _SignInState extends State<SignIn> {
                       onPressed: () {
                         context.go('/c');
                       },
-                      child: const Padding(
-                        padding: EdgeInsets.zero,
-                        child: Text(
-                          'Sign Up    ',
-                        ),
-                      ),
                       style: ButtonStyle(
                         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                           EdgeInsets.zero,
+                        ),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.zero,
+                        child: Text(
+                          'Sign Up ',
                         ),
                       ),
                     ),
