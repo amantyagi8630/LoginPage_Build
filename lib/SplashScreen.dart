@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(milliseconds: 400), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 300), (timer) {
       if (_charCount < 7) {
         setState(() {
           _welcomeText += 'Welcome'[_charCount];

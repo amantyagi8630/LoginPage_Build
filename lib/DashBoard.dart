@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DashBoard extends StatelessWidget {
   const DashBoard({Key? key});
 
-  // Function to log out and clear credentials
   Future<void> logOutAndClearCredentials(BuildContext context) async {
     // Clear stored data (logout)
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -13,7 +12,6 @@ class DashBoard extends StatelessWidget {
     String? email = prefs.getString('email');
     String? password = prefs.getString('password');
 
-    // Retrieve the list of registered users from SharedPreferences
     List<String>? registeredUsersData = prefs.getStringList('registered_users');
     if (registeredUsersData != null) {
       // Convert the list of user data into a list of maps
@@ -27,13 +25,11 @@ class DashBoard extends StatelessWidget {
         };
       }).toList();
 
-      // Find and remove the current user's data from the list
       registeredUsers.removeWhere((user) =>
           user['name'] == name &&
           user['email'] == email &&
           user['password'] == password);
 
-      // Save the updated list back to SharedPreferences
       prefs.setStringList(
         'registered_users',
         registeredUsers
@@ -43,12 +39,10 @@ class DashBoard extends StatelessWidget {
       );
     }
 
-    // Remove the current user's email and password from SharedPreferences
     prefs.remove('name');
     prefs.remove('email');
     prefs.remove('password');
 
-    // Navigate to the desired route, for example, '/a'
     context.go('/a');
   }
 
@@ -96,7 +90,6 @@ class DashBoard extends StatelessWidget {
               backgroundImage: Image.asset('images/rocket-launch.png').image,
             ),
             onPressed: () {
-              // Add action for the rightmost icon here
             },
           ),
         ],
@@ -108,7 +101,7 @@ class DashBoard extends StatelessWidget {
           future: SharedPreferences.getInstance(),
           builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
             if (!snapshot.hasData) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
 
             final prefs = snapshot.data!;
@@ -116,7 +109,7 @@ class DashBoard extends StatelessWidget {
             final email = prefs.getString('email');
 
             return Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
                     Color(0xFF0C187A),
@@ -132,17 +125,17 @@ class DashBoard extends StatelessWidget {
                   UserAccountsDrawerHeader(
                     accountName: Text(
                       name ?? 'Your Name',
-                      style: TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20),
                     ),
                     accountEmail: Text(
                       email ?? 'your@gmail.com',
-                      style: TextStyle(fontSize: 18),
+                      style: const TextStyle(fontSize: 18),
                     ),
                     currentAccountPicture: CircleAvatar(
                       backgroundImage:
                           Image.asset('images/rocket-launch.png').image,
                     ),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.transparent,
                     ),
                   ),
@@ -163,7 +156,7 @@ class DashBoard extends StatelessWidget {
                   ),
                   Expanded(
                     child:
-                        Container(), // Empty container to push items to the bottom
+                        Container(),
                   ),
                   ListTile(
                     leading: const Icon(
@@ -180,7 +173,7 @@ class DashBoard extends StatelessWidget {
                     ),
                     onTap: () {
                       logOutAndClearCredentials(
-                          context); // Call the logout function
+                          context);
                     },
                   ),
                   ListTile(
@@ -198,7 +191,7 @@ class DashBoard extends StatelessWidget {
                     ),
                     onTap: () {
                       logOutAndClearCredentials(
-                          context); // Call the clear credentials function
+                          context);
                     },
                   ),
                 ],
@@ -211,7 +204,7 @@ class DashBoard extends StatelessWidget {
       body: Container(
         height: double.infinity,
         width: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
               Color(0xFF0C187A),
