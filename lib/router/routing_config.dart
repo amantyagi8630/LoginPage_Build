@@ -35,7 +35,7 @@ class AppRoute {
     GoRoute(
       path: "/d",
       builder: (BuildContext context, GoRouterState state) {
-        return SignIn();
+        return SignIn(registeredUsers: [],);
       },
     ),
     GoRoute(

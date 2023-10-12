@@ -284,10 +284,12 @@ class _SignUpState extends State<SignUp> {
                                       backgroundColor: Colors.green.shade700,
                                       elevation: 6.0,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10.0),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
                                       ),
                                       behavior: SnackBarBehavior.floating,
-                                      duration: const Duration(milliseconds: 1500),
+                                      duration:
+                                          const Duration(milliseconds: 1500),
                                       padding: const EdgeInsets.all(16.0),
                                     ),
                                   );
@@ -311,7 +313,8 @@ class _SignUpState extends State<SignUp> {
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
                                     behavior: SnackBarBehavior.floating,
-                                    duration: const Duration(milliseconds: 1500),
+                                    duration:
+                                        const Duration(milliseconds: 1500),
                                     padding: const EdgeInsets.all(16.0),
                                   ),
                                 );

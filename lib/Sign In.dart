@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignIn extends StatefulWidget {
-  final List<Map<String, String>> registeredUsers;
-  const SignIn({Key? key, required this.registeredUsers}) : super(key: key);
+  const SignIn({Key? key, required List registeredUsers}) : super(key: key);
+
   @override
   _SignInState createState() => _SignInState();
 }
@@ -14,18 +14,17 @@ class _SignInState extends State<SignIn> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _obscurePassword = true;
-  final List<Map<String, String>> registeredUsers;
-  _SignInState(this.registeredUsers);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () {
-              context.go('/a');
-            },
-            icon: const Icon(Icons.arrow_back_ios_new)),
+          onPressed: () {
+            context.go('/a');
+          },
+          icon: const Icon(Icons.arrow_back_ios_new),
+        ),
       ),
       body: Container(
         decoration: const BoxDecoration(),
@@ -62,15 +61,17 @@ class _SignInState extends State<SignIn> {
                   controller: emailController,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.email),
-                      labelText: 'Email',
-                      hintText: 'Enter your email',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25))),
+                    labelText: 'Email',
+                    hintText: 'Enter your email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter username';
+                      return 'Please enter an email';
                     } else if (!value.endsWith('@gmail.com')) {
-                      return 'Please enter a valid username';
+                      return 'Please enter a valid email';
                     }
                     return null;
                   },
@@ -79,120 +80,117 @@ class _SignInState extends State<SignIn> {
                   height: 15,
                 ),
                 TextFormField(
-                    obscureText: _obscurePassword,
-                    obscuringCharacter: "*",
-
-                    controller: passwordController,
-                    decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.lock,size: 25,),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword =! _obscurePassword;
-                            });
-                          },
-                        ),
-                        labelText: 'Password',
-                        hintText: 'Enter Your Password',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25))),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a password';
-                      } else if (value.length < 8) {
-                        return 'minimum length required 8 characters';
-                      } else if (value.length > 14) {
-                        return 'maximum length required 14 characters';
-                      } else if (!RegExp(
-                              r'^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).+$')
-                          .hasMatch(value)) {
-                        return 'Please enter a valid password';
-                      } else {
-                        return null;
-                      }
-                    }),
+                  obscureText: _obscurePassword,
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(
+                      Icons.lock,
+                      size: 25,
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                    labelText: 'Password',
+                    hintText: 'Enter Your Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a password';
+                    } else if (value.length < 8) {
+                      return 'Minimum length required is 8 characters';
+                    } else if (value.length > 14) {
+                      return 'Maximum length allowed is 14 characters';
+                    } else if (!RegExp(
+                        r'^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).+$')
+                        .hasMatch(value)) {
+                      return 'Please enter a valid password';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(
                   height: 20,
                 ),
                 Builder(builder: (context) {
                   return ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade900,
-                        elevation: 10,
-                        minimumSize: const Size(370, 40),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(35),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade900,
+                      elevation: 10,
+                      minimumSize: const Size(370, 40),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(35),
                       ),
-                      onPressed: () async {
-                        if (_key.currentState!.validate()) {
-                          final enteredEmail = emailController.text;
-                          final enteredPassword = passwordController.text;
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                    onPressed: () async {
+                      if (_key.currentState!.validate()) {
+                        final enteredEmail = emailController.text;
+                        final enteredPassword = passwordController.text;
 
-                          // Check if the entered email and password match a user in the list
-                          bool isUserValid = false;
-                          String storedUsername = '';
+                        // Check if the entered email and password match the stored data
+                        bool isAuthenticated = await authenticateUser(
+                            enteredEmail, enteredPassword);
 
-                          for (var user in registeredUsers) {
-                            if (user['email'] == enteredEmail && user['password'] == enteredPassword) {
-                              isUserValid = true;
-                              storedUsername = user['email'];
-                              break;
-                            }
-                          }
-
-                          if (isUserValid) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Center(
-                                  child: Text(
-                                    'Welcome Back $storedUsername',
-                                    style: TextStyle(
-                                      fontFamily: "Roboto-Black",
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 22,
-                                    ),
+                        if (isAuthenticated) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Center(
+                                child: Text(
+                                  'Welcome Back $enteredEmail',
+                                  style: TextStyle(
+                                    fontFamily: "Roboto-Black",
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 22,
                                   ),
                                 ),
-                                backgroundColor: Colors.green.shade500,
-                                elevation: 6.0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                behavior: SnackBarBehavior.floating,
-                                duration: const Duration(milliseconds: 1500),
-                                padding: const EdgeInsets.all(16.0),
                               ),
-                            );
-                            context.go('/e');
-                          } else {
-                            const message = SnackBar(
-                              content: Text('Please enter valid email id & password'),
-                              duration: Duration(milliseconds: 1500),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(message);
-                          }
+                              backgroundColor: Colors.green.shade500,
+                              elevation: 6.0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(milliseconds: 1500),
+                              padding: const EdgeInsets.all(16.0),
+                            ),
+                          );
+                          context.go('/e');
+                        } else {
+                          const message = SnackBar(
+                            content: Text('Please enter a valid email and password'),
+                            duration: Duration(milliseconds: 1500),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(message);
                         }
-                      },
-                      child: const Text(
-                        'Sign In',
-                        style: TextStyle(fontSize: 25, color: Colors.black),
-                      ));
+                      }
+                    },
+                    child: const Text(
+                      'Sign In',
+                      style: TextStyle(fontSize: 25, color: Colors.black),
+                    ),
+                  );
                 }),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      'Dont have an account',
+                      "'Don't have an account'",
                       style: TextStyle(
-                          fontFamily: 'Roboto-Black',
-                          fontWeight: FontWeight.w600),
+                        fontFamily: 'Roboto-Black',
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
@@ -206,7 +204,7 @@ class _SignInState extends State<SignIn> {
                       child: const Padding(
                         padding: EdgeInsets.zero,
                         child: Text(
-                          'Sign Up ',
+                          'Sign Up',
                         ),
                       ),
                     ),
@@ -218,5 +216,21 @@ class _SignInState extends State<SignIn> {
         ),
       ),
     );
+  }
+
+  Future<bool> authenticateUser(String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    final registeredUsersData = prefs.getStringList('registered_users');
+    if (registeredUsersData != null) {
+      for (var userData in registeredUsersData) {
+        final userDataSplit = userData.split(':');
+        final storedEmail = userDataSplit[0];
+        final storedPassword = userDataSplit[1];
+        if (storedEmail == email && storedPassword == password) {
+          return true; // Authentication successful
+        }
+      }
+    }
+    return false; // Authentication failed
   }
 }
