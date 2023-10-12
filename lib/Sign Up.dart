@@ -34,8 +34,9 @@ class _SignUpState extends State<SignUp> {
       registeredUsers = registeredUsersData.map((userData) {
         final userDataSplit = userData.split(':');
         return {
-          'email': userDataSplit[0],
-          'password': userDataSplit[1],
+          'name': userDataSplit[0],
+          'email': userDataSplit[1],
+          'password': userDataSplit[2],
         };
       }).toList();
     }
@@ -44,7 +45,7 @@ class _SignUpState extends State<SignUp> {
   void saveRegisteredUsers() async {
     final prefs = await SharedPreferences.getInstance();
     final registeredUsersData = registeredUsers
-        .map((user) => '${user['email']}:${user['password']}')
+        .map((user) => '${user['name']}:${user['email']}:${user['password']}')
         .toList();
     prefs.setStringList('registered_users', registeredUsersData);
   }
@@ -55,18 +56,39 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    TextStyle myTextStyle = const TextStyle(
+      color: Colors.blue,
+      fontSize: 16.0,
+      decoration: TextDecoration.none,
+      decorationThickness: 0,
+    );
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         leading: IconButton(
             onPressed: () {
               context.go('/a');
             },
             icon: const Icon(Icons.arrow_back_ios_new)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
-      body: Column(
-        children: [
-          Expanded(
+      extendBodyBehindAppBar: true,
+      body: Center(
+        child: Container(
+          height: double.infinity,
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF0C187A),
+                Color(0xFF030F56),
+                Color(0xFF019CDF)
+              ],
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+            ),
+          ),
+          child: Center(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Form(
@@ -98,6 +120,7 @@ class _SignUpState extends State<SignUp> {
                         height: 23,
                       ),
                       TextFormField(
+                        style: myTextStyle,
                         controller: usernameController,
                         decoration: InputDecoration(
                             prefixIcon: const Icon(
@@ -106,6 +129,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                             labelText: 'Username',
                             hintText: 'Enter Your Name',
+                            hintStyle: TextStyle(color: Colors.blue),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(25))),
                         validator: (value) {
@@ -119,6 +143,7 @@ class _SignUpState extends State<SignUp> {
                         height: 20,
                       ),
                       TextFormField(
+                        style: myTextStyle,
                         controller: emailController,
                         decoration: InputDecoration(
                             labelText: 'Email',
@@ -127,6 +152,7 @@ class _SignUpState extends State<SignUp> {
                               size: 25,
                             ),
                             hintText: 'Enter Your Email',
+                            hintStyle: TextStyle(color: Colors.blue),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(25))),
                         validator: (value) {
@@ -143,6 +169,7 @@ class _SignUpState extends State<SignUp> {
                         height: 20,
                       ),
                       TextFormField(
+                          style: myTextStyle,
                           obscureText: _obscurePassword,
                           obscuringCharacter: "*",
                           controller: passwordController,
@@ -165,6 +192,7 @@ class _SignUpState extends State<SignUp> {
                               ),
                               labelText: 'Password',
                               hintText: 'Enter Your Password',
+                              hintStyle: TextStyle(color: Colors.blue),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(25))),
                           validator: (value) {
@@ -186,6 +214,7 @@ class _SignUpState extends State<SignUp> {
                         height: 20,
                       ),
                       TextFormField(
+                        style: myTextStyle,
                         controller: confirmPasswordController,
                         obscureText: _obscureConfirmPassword,
                         obscuringCharacter: "*",
@@ -209,6 +238,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                             labelText: 'Confirm Password',
                             hintText: 'Enter Your Password',
+                            hintStyle: TextStyle(color: Colors.blue),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(25),
                             )),
@@ -260,8 +290,7 @@ class _SignUpState extends State<SignUp> {
                                     ),
                                   );
                                 } else {
-                                  registeredUsers.add(
-                                      {'email': email, 'password': password});
+                                  registeredUsers.add({'name': name, 'email': email, 'password': password});
                                   saveRegisteredUsers();
                                   SharedPreferences prefs =
                                       await SharedPreferences.getInstance();
@@ -372,7 +401,7 @@ class _SignUpState extends State<SignUp> {
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
