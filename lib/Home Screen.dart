@@ -11,10 +11,11 @@ class HomeScreen extends StatelessWidget {
         title: const Text(
           'On Boarding',
           style: TextStyle(
-            color: Colors.black,
-              fontFamily: 'Roboto-Black',
-              fontSize: 30,
-              fontWeight: FontWeight.w600),
+            color: Colors.white,
+            fontFamily: 'Roboto-Black',
+            fontSize: 30,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -42,6 +43,7 @@ class HomeScreen extends StatelessWidget {
                     const Text(
                       "Hello There!",
                       style: TextStyle(
+                          color: Colors.white,
                           fontWeight: FontWeight.w800,
                           fontSize: 40,
                           fontFamily: 'Roboto-Black'),
@@ -51,7 +53,9 @@ class HomeScreen extends StatelessWidget {
                       height: 450,
                       width: 300,
                     ),
-                    SizedBox(height: 50,),
+                    SizedBox(
+                      height: 50,
+                    ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue.shade900,
@@ -68,6 +72,7 @@ class HomeScreen extends StatelessWidget {
                       child: const Text(
                         'Sign Up',
                         style: TextStyle(
+                            color: Colors.white,
                             fontSize: 30,
                             fontFamily: 'Roboto-Black',
                             fontWeight: FontWeight.w700),
@@ -88,12 +93,12 @@ class HomeScreen extends StatelessWidget {
                         context.push('/d');
                       },
                       child: const Text(
-                        'Sign in',
+                        'Login',
                         style: TextStyle(
                             fontSize: 30,
                             fontFamily: 'Roboto-Black',
                             fontWeight: FontWeight.w700,
-                            color: Colors.black),
+                            color: Colors.white),
                       ),
                     ),
                   ],

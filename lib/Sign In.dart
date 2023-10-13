@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key, required List registeredUsers}) : super(key: key);
-
+  static bool hasSignedIn = false;
   @override
   _SignInState createState() => _SignInState();
 }
@@ -19,10 +19,21 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     TextStyle myTextStyle = const TextStyle(
-      color: Colors.blue,
+      color: Colors.white,
       fontSize: 16.0,
       decoration: TextDecoration.none,
       decorationThickness: 0,
+      fontFamily: 'Roboto-Black',
+      fontWeight: FontWeight.w800,
+      letterSpacing: 0.8,
+    );
+    OutlineInputBorder myEnabledBorder = OutlineInputBorder(
+      borderSide: const BorderSide(color: Colors.white, width: 2.5),
+      borderRadius: BorderRadius.circular(25),
+    );
+    OutlineInputBorder myFocusedBorder = OutlineInputBorder(
+      borderSide: const BorderSide(color: Colors.blue, width: 2.5),
+      borderRadius: BorderRadius.circular(25),
     );
     return Scaffold(
       appBar: AppBar(
@@ -38,19 +49,15 @@ class _SignInState extends State<SignIn> {
       extendBodyBehindAppBar: true,
       body: Center(
         child: Container(
-            height: double.infinity,
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFF0C187A),
-                  Color(0xFF030F56),
-                  Color(0xFF019CDF)
-                ],
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-              ),
-              ),
+          height: double.infinity,
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF0C187A), Color(0xFF030F56), Color(0xFF019CDF)],
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+            ),
+          ),
           child: Container(
             decoration: const BoxDecoration(),
             child: Padding(
@@ -63,9 +70,11 @@ class _SignInState extends State<SignIn> {
                     const Text(
                       'Sign In',
                       style: TextStyle(
+                        letterSpacing: 0.8,
                         fontFamily: 'Roboto-Black',
                         fontWeight: FontWeight.w800,
                         fontSize: 35,
+                        color: Colors.white
                       ),
                     ),
                     const SizedBox(
@@ -74,9 +83,10 @@ class _SignInState extends State<SignIn> {
                     const Text(
                       'Welcome back! Login with your credentials',
                       style: TextStyle(
-                        fontWeight: FontWeight.w500,
                         fontFamily: 'Roboto-Black',
                         fontSize: 15,
+                        color: Colors.white,
+                        letterSpacing: 0.8,
                       ),
                     ),
                     const SizedBox(
@@ -86,13 +96,16 @@ class _SignInState extends State<SignIn> {
                       style: myTextStyle,
                       controller: emailController,
                       decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.email),
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          color: Colors.white,
+                        ),
                         labelText: 'Email',
                         hintText: 'Enter your email',
-                        hintStyle: TextStyle(color: Colors.blue),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
+                        labelStyle: myTextStyle,
+                        hintStyle: myTextStyle,
+                        enabledBorder: myEnabledBorder,
+                        focusedBorder: myFocusedBorder,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -112,10 +125,12 @@ class _SignInState extends State<SignIn> {
                       controller: passwordController,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(
+                          color: Colors.white,
                           Icons.lock,
                           size: 25,
                         ),
                         suffixIcon: IconButton(
+                          color: Colors.white,
                           icon: Icon(
                             _obscurePassword
                                 ? Icons.visibility_off
@@ -129,10 +144,10 @@ class _SignInState extends State<SignIn> {
                         ),
                         labelText: 'Password',
                         hintText: 'Enter Your Password',
-                        hintStyle: TextStyle(color: Colors.blue),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
+                        enabledBorder: myEnabledBorder,
+                        focusedBorder: myFocusedBorder,
+                        labelStyle: myTextStyle,
+                        hintStyle: myTextStyle,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -142,7 +157,7 @@ class _SignInState extends State<SignIn> {
                         } else if (value.length > 14) {
                           return 'Maximum length allowed is 14 characters';
                         } else if (!RegExp(
-                            r'^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).+$')
+                                r'^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).+$')
                             .hasMatch(value)) {
                           return 'Please enter a valid password';
                         }
@@ -194,6 +209,7 @@ class _SignInState extends State<SignIn> {
                                   padding: const EdgeInsets.all(16.0),
                                 ),
                               );
+                              SignIn.hasSignedIn = true;
                               context.go('/e');
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -222,8 +238,12 @@ class _SignInState extends State<SignIn> {
                           }
                         },
                         child: const Text(
-                          'Sign In',
-                          style: TextStyle(fontSize: 25, color: Colors.black),
+                          'Login',
+                          style: TextStyle(
+                              fontSize: 25,
+                              color: Colors.white,
+                              letterSpacing: 0.8,
+                              fontFamily: 'Roboto-Black'),
                         ),
                       );
                     }),
@@ -242,7 +262,8 @@ class _SignInState extends State<SignIn> {
                             context.go('/c');
                           },
                           style: ButtonStyle(
-                            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                            padding:
+                                MaterialStateProperty.all<EdgeInsetsGeometry>(
                               EdgeInsets.zero,
                             ),
                           ),
@@ -274,7 +295,7 @@ class _SignInState extends State<SignIn> {
         final userDataSplit = userData.split(':');
         final storedEmail = userDataSplit[1];
         final storedPassword = userDataSplit[2];
-        final storedName = userDataSplit[0]; // Retrieve the name
+        final storedName = userDataSplit[0];
 
         if (storedEmail == email && storedPassword == password) {
           setState(() {

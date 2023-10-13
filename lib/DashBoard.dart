@@ -1,49 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:untitled/Sign%20In.dart';
 
 class DashBoard extends StatelessWidget {
   const DashBoard({Key? key});
 
-  Future<void> logOutAndClearCredentials(BuildContext context) async {
-    // Clear stored data (logout)
+  Future<void> logOutAndClearCredentials(BuildContext context,
+      {bool deleteAccount = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? name = prefs.getString('name');
-    String? email = prefs.getString('email');
-    String? password = prefs.getString('password');
+    if (deleteAccount) {
+      String? email = prefs.getString('email');
 
-    List<String>? registeredUsersData = prefs.getStringList('registered_users');
-    if (registeredUsersData != null) {
-      // Convert the list of user data into a list of maps
-      List<Map<String, String>> registeredUsers =
-          registeredUsersData.map((userData) {
-        final userDataSplit = userData.split(':');
-        return {
-          'name': userDataSplit[0],
-          'email': userDataSplit[1],
-          'password': userDataSplit[2],
-        };
-      }).toList();
-
-      registeredUsers.removeWhere((user) =>
-          user['name'] == name &&
-          user['email'] == email &&
-          user['password'] == password);
-
-      prefs.setStringList(
-        'registered_users',
-        registeredUsers
-            .map((user) =>
-                '${user['name']}:${user['email']}:${user['password']}')
-            .toList(),
-      );
+      List<String>? registeredUsersData =
+          prefs.getStringList('registered_users');
+      if (registeredUsersData != null) {
+        registeredUsersData
+            .removeWhere((userData) => userData.split(':')[1] == email);
+        prefs.setStringList('registered_users', registeredUsersData);
+      }
     }
 
     prefs.remove('name');
     prefs.remove('email');
     prefs.remove('password');
 
-    context.go('/a');
+    if (deleteAccount)
+    {
+      SignIn.hasSignedIn = false;
+      context.go('/a');
+    } else {
+      SignIn.hasSignedIn = false;
+      context.go('/a');
+    }
   }
 
   @override
@@ -89,8 +78,7 @@ class DashBoard extends StatelessWidget {
             icon: CircleAvatar(
               backgroundImage: Image.asset('images/rocket-launch.png').image,
             ),
-            onPressed: () {
-            },
+            onPressed: () {},
           ),
         ],
         backgroundColor: Colors.transparent,
@@ -155,8 +143,7 @@ class DashBoard extends StatelessWidget {
                     },
                   ),
                   Expanded(
-                    child:
-                        Container(),
+                    child: Container(),
                   ),
                   ListTile(
                     leading: const Icon(
@@ -172,8 +159,7 @@ class DashBoard extends StatelessWidget {
                           color: Colors.green),
                     ),
                     onTap: () {
-                      logOutAndClearCredentials(
-                          context);
+                      logOutAndClearCredentials(context);
                     },
                   ),
                   ListTile(
@@ -190,8 +176,7 @@ class DashBoard extends StatelessWidget {
                           color: Colors.red),
                     ),
                     onTap: () {
-                      logOutAndClearCredentials(
-                          context);
+                      logOutAndClearCredentials(context, deleteAccount: true);
                     },
                   ),
                 ],

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:untitled/Sign%20In.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -42,8 +43,12 @@ class _SplashScreenState extends State<SplashScreen> {
     final email = prefs.getString('email');
     final password = prefs.getString('password');
 
-    if (email != null && password != null) {
+    if (email != null && password != null && SignIn.hasSignedIn == true) {
       context.go('/b');
+    } else if (email != null &&
+        password != null &&
+        SignIn.hasSignedIn == false) {
+      context.go('/d');
     } else {
       context.go('/a');
     }
@@ -70,6 +75,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 fontSize: 40,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Roboto-Black',
+                color: Colors.white,
               ),
             ),
           ),
