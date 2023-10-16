@@ -70,11 +70,11 @@ class _SignInState extends State<SignIn> {
                     const Text(
                       'Sign In',
                       style: TextStyle(
-                        letterSpacing: 0.8,
-                        fontFamily: 'Roboto-Black',
-                        fontWeight: FontWeight.w800,
-                        fontSize: 35,
-                        color: Colors.white
+                          letterSpacing: 0.8,
+                          fontFamily: 'Roboto-Black',
+                          fontWeight: FontWeight.w800,
+                          fontSize: 35,
+                          color: Colors.white
                       ),
                     ),
                     const SizedBox(
@@ -157,7 +157,7 @@ class _SignInState extends State<SignIn> {
                         } else if (value.length > 14) {
                           return 'Maximum length allowed is 14 characters';
                         } else if (!RegExp(
-                                r'^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).+$')
+                            r'^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).+$')
                             .hasMatch(value)) {
                           return 'Please enter a valid password';
                         }
@@ -263,7 +263,7 @@ class _SignInState extends State<SignIn> {
                           },
                           style: ButtonStyle(
                             padding:
-                                MaterialStateProperty.all<EdgeInsetsGeometry>(
+                            MaterialStateProperty.all<EdgeInsetsGeometry>(
                               EdgeInsets.zero,
                             ),
                           ),
@@ -298,6 +298,10 @@ class _SignInState extends State<SignIn> {
         final storedName = userDataSplit[0];
 
         if (storedEmail == email && storedPassword == password) {
+          // Save the user's name and email in SharedPreferences
+          await prefs.setString('name', storedName);
+          await prefs.setString('email', storedEmail);
+
           setState(() {
             registeredUserName = storedName;
           });

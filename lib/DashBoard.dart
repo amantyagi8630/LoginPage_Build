@@ -6,32 +6,30 @@ import 'package:untitled/Sign%20In.dart';
 class DashBoard extends StatelessWidget {
   const DashBoard({Key? key});
 
-  Future<void> logOutAndClearCredentials(BuildContext context,
-      {bool deleteAccount = false}) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<void> logOut(BuildContext context) async {
+    // Clear the signed-in flag
+    SignIn.hasSignedIn = false;
+
+    // Navigate back to the sign-in screen
+    context.go('/a');
+  }
+
+  Future<void> clearCredentials(BuildContext context, {required bool deleteAccount}) async {
     if (deleteAccount) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       String? email = prefs.getString('email');
 
       List<String>? registeredUsersData =
-          prefs.getStringList('registered_users');
+      prefs.getStringList('registered_users');
       if (registeredUsersData != null) {
         registeredUsersData
             .removeWhere((userData) => userData.split(':')[1] == email);
         prefs.setStringList('registered_users', registeredUsersData);
       }
-    }
 
-    prefs.remove('name');
-    prefs.remove('email');
-    prefs.remove('password');
-
-    if (deleteAccount)
-    {
-      SignIn.hasSignedIn = false;
-      context.go('/a');
-    } else {
-      SignIn.hasSignedIn = false;
-      context.go('/a');
+      prefs.remove('name');
+      prefs.remove('email');
+      prefs.remove('password');
     }
   }
 
@@ -159,7 +157,7 @@ class DashBoard extends StatelessWidget {
                           color: Colors.green),
                     ),
                     onTap: () {
-                      logOutAndClearCredentials(context);
+                      logOut(context);
                     },
                   ),
                   ListTile(
@@ -176,7 +174,7 @@ class DashBoard extends StatelessWidget {
                           color: Colors.red),
                     ),
                     onTap: () {
-                      logOutAndClearCredentials(context, deleteAccount: true);
+                      clearCredentials(context, deleteAccount: true);
                     },
                   ),
                 ],
